@@ -20,9 +20,9 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Config — edit these paths / flags here (not via command line)
 # ---------------------------------------------------------------------------
-SEARCH_ROOT = r"E:\CEAMS\snooz_workspace\Datasets\covid_project"  # Study database to search
+SEARCH_ROOT = r"\\athena\\Xltek_Recherche\\DbData"  # Study database to search
 # Mother folder that will contain every anonymized/renamed study folder.
-OUTPUT_ROOT = r"E:\CEAMS\snooz_workspace\Datasets\covid_project\Anonymizer test2"
+OUTPUT_ROOT = r"\\athena\\Xltek_Recherche\\Rename_test"
 DO_RENAME = True  # True: anonymize + rename; False: search/report only
 MAKE_COPY = True  # Always copy first; originals stay untouched
 
@@ -54,9 +54,9 @@ ANON_STUDY_NUMBERS = False
 # Fall back to the xltek_reader build tree if needed.
 _SCRIPT_DIR = Path(__file__).resolve().parent
 _XLTEK_RELEASE = Path(r"E:\CEAMS\InfoPathProject\xltek_reader\build\Release")
-for candidate in (_SCRIPT_DIR, _XLTEK_RELEASE):
+'''for candidate in (_SCRIPT_DIR, _XLTEK_RELEASE):
     if str(candidate) not in sys.path:
-        sys.path.insert(0, str(candidate))
+        sys.path.insert(0, str(candidate))'''
 
 try:
     import XltekReader
@@ -71,6 +71,16 @@ EXCEL_PATH = _SCRIPT_DIR / "Natus_filenames_for_RBD.xlsx"
 COL_CODE = "Code"
 COL_DATE = "Date PSG"
 COL_NOM = "Nom fichier"
+
+
+def configured_path(value: str) -> Path:
+    """Convert a local or UNC path while tolerating repeated separators."""
+    normalized = value.strip().replace("/", "\\")
+    if normalized.startswith("\\\\"):
+        normalized = "\\\\" + "\\".join(
+            part for part in normalized[2:].split("\\") if part
+        )
+    return Path(normalized)
 
 
 @dataclass
@@ -282,8 +292,8 @@ def main() -> int:
         return 1
 
     excel_path = EXCEL_PATH.resolve()
-    search_root = Path(SEARCH_ROOT).resolve()
-    output_root = Path(OUTPUT_ROOT).resolve()
+    search_root = configured_path(SEARCH_ROOT)
+    output_root = configured_path(OUTPUT_ROOT)
 
     if not excel_path.is_file():
         print(f"Excel file not found: {excel_path}", file=sys.stderr)
