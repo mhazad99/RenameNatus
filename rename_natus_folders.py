@@ -25,6 +25,29 @@ SEARCH_ROOT = r"E:\CEAMS\snooz_workspace\Datasets\covid_project"  # Study databa
 OUTPUT_ROOT = r"E:\CEAMS\snooz_workspace\Datasets\covid_project\Anonymizer test2"
 DO_RENAME = True  # True: anonymize + rename; False: search/report only
 MAKE_COPY = True  # Always copy first; originals stay untouched
+
+# anonymize_header flags — True = wipe / anonymize that field
+ANON_FIRSTNAME = False
+ANON_LASTNAME = False
+ANON_MIDDLENAME = False
+ANON_PATIENT_ID = False
+ANON_PATIENT_GUID = False
+ANON_BIRTH_DATE = False
+ANON_SEX = False
+ANON_HANDEDNESS = False
+ANON_ADDRESS = False
+ANON_TELEPHONE = False
+ANON_HEIGHT = False
+ANON_WEIGHT = False
+ANON_CHART_NO = False
+ANON_BILLING_ID = False
+ANON_REFERRING_PHYSICIAN = False
+ANON_WARD = False
+ANON_STUDY_CREATOR = False
+ANON_STUDY_NAME = False
+ANON_STUDY_GUID = False
+ANON_STUDY_NUMBERS = False
+# rename_study / new_study_name / make_copy / copy_folder are set in rename_study()
 # ---------------------------------------------------------------------------
 
 # Prefer a local Windows wrapper (.pyd) copied into this folder.
@@ -152,9 +175,29 @@ def rename_study(
         raise RuntimeError(f"Could not open {eeg_path}: {reader.get_last_error()}")
 
     try:
-        # Full anonymize (all subject flags default to True) on a copy, then rename
-        # files so their stem matches new_study_name (same as the folder name).
+        # Anonymize selected fields (see ANON_* config above) on a copy, then
+        # rename files so their stem matches new_study_name (same as the folder name).
         success = reader.anonymize_header(
+            firstname=ANON_FIRSTNAME,
+            lastname=ANON_LASTNAME,
+            middlename=ANON_MIDDLENAME,
+            patient_id=ANON_PATIENT_ID,
+            patient_guid=ANON_PATIENT_GUID,
+            birth_date=ANON_BIRTH_DATE,
+            sex=ANON_SEX,
+            handedness=ANON_HANDEDNESS,
+            address=ANON_ADDRESS,
+            telephone=ANON_TELEPHONE,
+            height=ANON_HEIGHT,
+            weight=ANON_WEIGHT,
+            chart_no=ANON_CHART_NO,
+            billing_id=ANON_BILLING_ID,
+            referring_physician=ANON_REFERRING_PHYSICIAN,
+            ward=ANON_WARD,
+            study_creator=ANON_STUDY_CREATOR,
+            study_name=ANON_STUDY_NAME,
+            study_guid=ANON_STUDY_GUID,
+            study_numbers=ANON_STUDY_NUMBERS,
             rename_study=True,
             new_study_name=new_study_name,
             make_copy=make_copy,
